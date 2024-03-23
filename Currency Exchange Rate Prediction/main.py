@@ -63,6 +63,10 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 # Train the model
 model.fit(train_X, train_y, epochs=100, batch_size=32)
 
+# Save the trained model
+model.save('trained_model')
+
+
 # Make predictions
 predictions = model.predict(test_X)
 

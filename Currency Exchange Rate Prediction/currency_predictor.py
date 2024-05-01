@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from datetime import datetime
 import numpy as np
 from keras.models import load_model
@@ -18,18 +19,22 @@ time_step = 100
 
 # Function to preprocess input date and make predictions
 def predict_currency_rate():
-    # Load the trained model
-    model = load_model('trained_model')
+    # Get the date from the input fields
+    day = day_entry.get()
+    month = month_entry.get()
+    year = year_entry.get()
 
-    # Define the scaler
-    scaler = MinMaxScaler(feature_range=(0, 1))
-
-    # Get the date from the input field
-    input_date_str = date_entry.get()
+    input_date_str = f"{day}-{month}-{year}"
 
     try:
         # Convert the input date string to a datetime object
         input_date = datetime.strptime(input_date_str, "%d-%m-%Y")
+
+        # Load the trained model
+        model = load_model('trained_model')
+
+        # Define the scaler
+        scaler = MinMaxScaler(feature_range=(0, 1))
 
         # Extend the dataset for future predictions
         future_dates = pd.date_range(start=data.index[-1] + pd.Timedelta(days=1), end=input_date)
@@ -72,37 +77,76 @@ def predict_currency_rate():
 
 # Function to reset input and result
 def reset():
-    date_entry.delete(0, tk.END)  # Clear input date field
-    result_label.config(text="")  # Clear result label
-    previous_prediction_label.config(text="")  # Clear previous prediction label
+    day_entry.delete(0, tk.END)
+    month_entry.delete(0, tk.END)
+    year_entry.delete(0, tk.END)
+    result_label.config(text="")
+    previous_prediction_label.config(text="")
+
+
+# Function to close the application
+def close_app():
+    root.destroy()
 
 
 # Create the main Tkinter window
 root = tk.Tk()
-root.title("Currency Rate Predictor")
-root.geometry("400x300")  # Set window size
+root.title("Currency Forecaster")
+root.geometry("400x400")  # Set window size
 
-# Add input field for date
-date_label = tk.Label(root, text="Enter date (DD-MM-YYYY):")
-date_label.pack()
-date_entry = tk.Entry(root)
-date_entry.pack()
+# Add big title
+title_label = ttk.Label(root, text="Currency Forecaster", font=("Helvetica", 20, "bold"))
+title_label.pack(pady=(20, 10))
+
+# Add subtitle
+subtitle_label = ttk.Label(root, text="USD - LKR (historical data from 2006 to 2024)", font=("Helvetica", 12))
+subtitle_label.pack()
+
+# Create a frame for input fields
+input_frame = ttk.Frame(root)
+input_frame.pack(pady=10)
+
+# Day entry field
+day_label = ttk.Label(input_frame, text="Day:")
+day_label.grid(row=0, column=0, padx=5, pady=5)
+day_entry = ttk.Entry(input_frame, width=5)
+day_entry.grid(row=0, column=1, padx=5, pady=5)
+
+# Month entry field
+month_label = ttk.Label(input_frame, text="Month:")
+month_label.grid(row=0, column=2, padx=5, pady=5)
+month_entry = ttk.Entry(input_frame, width=5)
+month_entry.grid(row=0, column=3, padx=5, pady=5)
+
+# Year entry field
+year_label = ttk.Label(input_frame, text="Year:")
+year_label.grid(row=0, column=4, padx=5, pady=5)
+year_entry = ttk.Entry(input_frame, width=8)
+year_entry.grid(row=0, column=5, padx=5, pady=5)
 
 # Add button to trigger prediction
-predict_button = tk.Button(root, text="Predict", command=predict_currency_rate)
-predict_button.pack()
+predict_button = ttk.Button(root, text="Predict", command=predict_currency_rate)
+predict_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
 
 # Add button to reset input and result
-reset_button = tk.Button(root, text="Reset", command=reset)
-reset_button.pack()
+reset_button = ttk.Button(root, text="Reset", command=reset)
+reset_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
+
+# Add button to view log
+log_button = ttk.Button(root, text="View Log")  # Functionality for log button needs to be added
+log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
+
+# Add close application button
+close_button = ttk.Button(root, text="Close Application", command=close_app)
+close_button.pack(side=tk.BOTTOM, padx=10, pady=5, fill=tk.X)
 
 # Add label to display result
-result_label = tk.Label(root, text="")
-result_label.pack()
+result_label = ttk.Label(root, text="")
+result_label.pack(side=tk.TOP, padx=10, pady=5)
 
 # Add label to display previously predicted currency rate
-previous_prediction_label = tk.Label(root, text="")
-previous_prediction_label.pack()
+previous_prediction_label = ttk.Label(root, text="")
+previous_prediction_label.pack(side=tk.TOP, padx=10, pady=5)
 
 # Start the Tkinter event loop
 root.mainloop()

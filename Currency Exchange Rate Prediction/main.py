@@ -7,12 +7,14 @@ from keras.layers import LSTM, Dense
 from sklearn.metrics import mean_squared_error
 
 # Load data
-data = pd.read_csv('exchange_rate_data.csv', index_col='Date', parse_dates=True)
+data = pd.read_csv('exchange_rate_data.csv', parse_dates=['Date'])
+data = data.set_index('Date')
 
-# Print the shape of the loaded data to verify correctness
-print("Shape of loaded data:", data.shape)
+# Sort the DataFrame by the datetime index
+data = data.sort_index()
 
-print(data.isnull().sum())
+# Filter data from 2006 to April 2024
+data = data['2006':'2024-04']
 
 # Normalize the data
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -66,23 +68,20 @@ model.fit(train_X, train_y, epochs=100, batch_size=32)
 # Save the trained model
 model.save('trained_model')
 
+# Save the training data to a file
+np.savez('training_data.npz', train_X=train_X, train_y=train_y, test_X=test_X, test_y=test_y)
 
-# Make predictions
-predictions = model.predict(test_X)
+# Make predictions for future values
+future_predictions = []
+last_sequence = scaled_data[-time_step:]
+for i in range(12):  # Predicting 12 months into the future
+    prediction = model.predict(np.reshape(last_sequence, (1, time_step, 1)))
+    future_predictions.append(prediction[0][0])
+    last_sequence = np.append(last_sequence[1:], prediction[0])
 
-# Reshape predictions to match the expected shape for inverse transformation
-predictions = predictions.reshape(-1, 1)
+# Inverse transform the future predictions
+future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
 
-# Inverse transform the predictions
-predictions = scaler.inverse_transform(predictions)
-
-
-# Inverse transform the actual values
-test_y = scaler.inverse_transform(test_y.reshape(-1, 1))
-
-# Calculate RMSE
-rmse = np.sqrt(mean_squared_error(test_y, predictions))
-print("Root Mean Squared Error:", rmse)
-
-print("Shape of predictions:", predictions.shape)
-
+# Print future predictions
+print("Future predictions:")
+print(future_predictions)

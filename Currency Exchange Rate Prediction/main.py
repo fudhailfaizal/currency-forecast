@@ -5,6 +5,23 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
 from sklearn.metrics import mean_squared_error
+import requests
+import io
+
+# Function to fetch exchange rate data from Alpha Vantage API
+def fetch_exchange_rate(api_key):
+    url = f"https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=USD&to_symbol=LKR&apikey={api_key}&datatype=csv"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("API Response:")
+        print(response.text)  # Print API response for debugging
+        data = pd.read_csv(io.StringIO(response.text))
+        data['timestamp'] = pd.to_datetime(data['timestamp'])
+        data = data.set_index('timestamp')
+        return data
+    else:
+        print("Failed to fetch exchange rate data. Status Code:", response.status_code)
+        return None
 
 # Load data
 data = pd.read_csv('exchange_rate_data.csv', parse_dates=['Date'])
@@ -50,19 +67,33 @@ train_y, test_y = y[:train_size], y[train_size:]
 
 # Define the LSTM model
 model = Sequential()
-model.add(LSTM(units=100, return_sequences=True, input_shape=(time_step, 1)))
+model.add(LSTM(units=128, return_sequences=True, input_shape=(time_step, 1)))
 model.add(Dropout(0.2))
-model.add(LSTM(units=100, return_sequences=True))
+model.add(LSTM(units=128, return_sequences=True))
 model.add(Dropout(0.2))
-model.add(LSTM(units=100))
+model.add(LSTM(units=128))
 model.add(Dropout(0.2))
 model.add(Dense(units=1))
 
-# Compile the model
-model.compile(optimizer='adam', loss='mean_squared_error')
+# Compile the model with a custom learning rate
+from keras.optimizers import Adam
+optimizer = Adam(lr=0.001)
+model.compile(optimizer=optimizer, loss='mean_squared_error')
 
-# Train the model
-model.fit(train_X, train_y, epochs=150, batch_size=32, validation_data=(test_X, test_y), verbose=1)
+# Train the model with more epochs and a different batch size
+model.fit(train_X, train_y, epochs=50, batch_size=64, validation_data=(test_X, test_y), verbose=1)
+
+# Fetch latest exchange rate data
+api_key = "MXTXWLWQM3G26PQW"
+latest_exchange_rate_data = fetch_exchange_rate(api_key)
+
+# Print today's currency value through the API
+if latest_exchange_rate_data is not None:
+    today_value_api = latest_exchange_rate_data.iloc[-1]['close']
+    print("Today's currency value (USD to LKR) from Alpha Vantage API:")
+    print(today_value_api)
+else:
+    print("Failed to fetch today's currency value from the API.")
 
 # Make predictions for future values
 future_predictions = []
@@ -75,6 +106,24 @@ for i in range(12):  # Predicting 12 months into the future
 # Inverse transform the future predictions
 future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
 
-# Print future predictions
-print("Future predictions:")
-print(future_predictions)
+# Compare predicted values with the value from the API
+print("Comparison between predicted values and today's value from the API:")
+for i, prediction in enumerate(future_predictions):
+    difference = prediction - today_value_api
+    print(f"Prediction {i+1}: {prediction[0]:.2f} (Difference: {difference[0]:.2f})")
+
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Predictions on training set
+train_predictions = model.predict(train_X)
+train_mse = mean_squared_error(train_y, train_predictions)
+train_mae = mean_absolute_error(train_y, train_predictions)
+print("Training MSE:", train_mse)
+print("Training MAE:", train_mae)
+
+# Predictions on validation set
+val_predictions = model.predict(test_X)
+val_mse = mean_squared_error(test_y, val_predictions)
+val_mae = mean_absolute_error(test_y, val_predictions)
+print("Validation MSE:", val_mse)
+print("Validation MAE:", val_mae)

@@ -1,3 +1,4 @@
+# Import necessary libraries
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
@@ -36,7 +37,33 @@ def predict_currency_rate():
         month = int(month_entry.get())
         year = int(year_entry.get())
 
-        input_date_str = f"{year}-{month}-{day}"
+        if year <= 2024:
+            warning_label.config(text="Please enter a year from 2025 and above.", foreground="red", font=("Helvetica", 10, "bold"))
+            return
+        elif year > 2100:
+            warning_label.config(text="Year cannot be over 2100.", foreground="red", font=("Helvetica", 10, "bold"))
+            return
+        elif year > 2040:
+            warning_label.config(text="Warning: Predictions beyond 2040 are speculative.", foreground="red", font=("Helvetica", 10, "bold"))
+
+        if month < 1 or month > 12:
+            warning_label.config(text="Invalid month. Please enter a month between 1 and 12.", foreground="red", font=("Helvetica", 10, "bold"))
+            return
+
+        if day < 1 or (day > 31 and month in [1, 3, 5, 7, 8, 10, 12]) or (day > 30 and month in [4, 6, 9, 11]):
+            warning_label.config(text=f"Invalid day for month {month}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+            return
+
+        if month == 2 and ((year % 4 == 0 and year % 100 != 0) or year % 400 == 0):
+            if day > 29:
+                warning_label.config(text=f"Invalid day for February {year}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+                return
+        elif month == 2:
+            if day > 28:
+                warning_label.config(text=f"Invalid day for February {year}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+                return
+
+        input_date_str = f"{year}-{month:02d}-{day:02d}"
 
         # Convert the input date string to a datetime object
         input_date = datetime.strptime(input_date_str, "%Y-%m-%d")
@@ -83,7 +110,7 @@ def predict_currency_rate():
             result_label.config(text="Not enough historical data to make prediction for this date.")
 
     except ValueError:
-        result_label.config(text="Invalid date format. Please use YYYY-MM-DD.")
+        result_label.config(text="Invalid date format. Please use DD-MM-YYYY format.")
 
 # Function to reset input and result
 def reset():
@@ -92,6 +119,7 @@ def reset():
     year_entry.delete(0, tk.END)
     result_label.config(text="")
     previous_prediction_label.config(text="")
+    warning_label.config(text="", foreground="red", font=("Helvetica", 10, "bold"))
 
 
 # Function to close the application
@@ -145,6 +173,10 @@ reset_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
 # Add button to view log
 log_button = ttk.Button(root, text="View Log")  # Functionality for log button needs to be added
 log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
+
+# Add warning label
+warning_label = ttk.Label(root, text="", foreground="red", font=("Helvetica", 10, "bold"))
+warning_label.pack(side=tk.BOTTOM, padx=10, pady=5, fill=tk.X)
 
 # Add close application button
 close_button = ttk.Button(root, text="Close Application", command=close_app)

@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 import numpy as np
-from keras.models import load_model
 import pandas as pd
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
 
 # Load data
@@ -16,25 +17,29 @@ data = data.sort_index()
 # Define the time step
 time_step = 100
 
+# Define the model
+def create_model():
+    model = Sequential()
+    model.add(LSTM(units=50, return_sequences=True, input_shape=(time_step, 1)))
+    model.add(LSTM(units=50))
+    model.add(Dense(units=1))
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    return model
+
+model = create_model()
 
 # Function to preprocess input date and make predictions
 def predict_currency_rate():
-    # Get the date from the input fields
-    day = day_entry.get()
-    month = month_entry.get()
-    year = year_entry.get()
-
-    input_date_str = f"{day}-{month}-{year}"
-
     try:
+        # Get the date from the input fields
+        day = int(day_entry.get())
+        month = int(month_entry.get())
+        year = int(year_entry.get())
+
+        input_date_str = f"{year}-{month}-{day}"
+
         # Convert the input date string to a datetime object
-        input_date = datetime.strptime(input_date_str, "%d-%m-%Y")
-
-        # Load the trained model
-        model = load_model('trained_model')
-
-        # Define the scaler
-        scaler = MinMaxScaler(feature_range=(0, 1))
+        input_date = datetime.strptime(input_date_str, "%Y-%m-%d")
 
         # Extend the dataset for future predictions
         future_dates = pd.date_range(start=data.index[-1] + pd.Timedelta(days=1), end=input_date)
@@ -50,11 +55,17 @@ def predict_currency_rate():
             # Extract the relevant portion of the data for prediction
             input_data = data_extended.iloc[input_index - time_step + 1: input_index + 1]
 
-            # Scale the input data
+            # Normalize the input data
+            scaler = MinMaxScaler(feature_range=(0, 1))
             scaled_input_data = scaler.fit_transform(input_data)
 
             # Reshape input data to match the model input shape
             scaled_input_data = np.reshape(scaled_input_data, (1, time_step, 1))
+
+            # Train the model with the new input data
+            train_X = scaled_input_data
+            train_y = np.array([data_extended.iloc[input_index]['Exchange Rate']])
+            model.fit(train_X, train_y, epochs=10, verbose=0)
 
             # Make predictions
             predicted_rate = model.predict(scaled_input_data)
@@ -72,8 +83,7 @@ def predict_currency_rate():
             result_label.config(text="Not enough historical data to make prediction for this date.")
 
     except ValueError:
-        result_label.config(text="Invalid date format. Please use DD-MM-YYYY.")
-
+        result_label.config(text="Invalid date format. Please use YYYY-MM-DD.")
 
 # Function to reset input and result
 def reset():

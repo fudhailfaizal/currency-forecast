@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense, Dropout
 from sklearn.metrics import mean_squared_error
 
 # Load data
@@ -39,11 +39,6 @@ time_step = 100
 # Create the dataset
 X, y = create_dataset(scaled_data, time_step)
 
-# Check if X and y are not None before attempting to print their shapes
-if X is not None and y is not None:
-    print("Shape of X before reshaping:", X.shape)
-    print("Shape of y:", y.shape)
-
 # Reshape input to be [samples, time steps, features]
 X = np.reshape(X, (X.shape[0], X.shape[1], 1))
 
@@ -55,21 +50,19 @@ train_y, test_y = y[:train_size], y[train_size:]
 
 # Define the LSTM model
 model = Sequential()
-model.add(LSTM(units=50, return_sequences=True, input_shape=(time_step, 1)))
-model.add(LSTM(units=50))
+model.add(LSTM(units=100, return_sequences=True, input_shape=(time_step, 1)))
+model.add(Dropout(0.2))
+model.add(LSTM(units=100, return_sequences=True))
+model.add(Dropout(0.2))
+model.add(LSTM(units=100))
+model.add(Dropout(0.2))
 model.add(Dense(units=1))
 
 # Compile the model
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Train the model
-model.fit(train_X, train_y, epochs=100, batch_size=32)
-
-# Save the trained model
-model.save('trained_model')
-
-# Save the training data to a file
-np.savez('training_data.npz', train_X=train_X, train_y=train_y, test_X=test_X, test_y=test_y)
+model.fit(train_X, train_y, epochs=150, batch_size=32, validation_data=(test_X, test_y), verbose=1)
 
 # Make predictions for future values
 future_predictions = []

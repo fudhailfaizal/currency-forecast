@@ -1,33 +1,19 @@
-# Import necessary libraries
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
+import logging
 
-# Load data
-data = pd.read_csv('exchange_rate_data.csv', parse_dates=['Date'])
-data = data.set_index('Date')
+# Configure logging
+logging.basicConfig(filename='currency_forecaster.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Sort the DataFrame by the datetime index
-data = data.sort_index()
-
-# Define the time step
-time_step = 100
-
-# Define the model
-def create_model():
-    model = Sequential()
-    model.add(LSTM(units=50, return_sequences=True, input_shape=(time_step, 1)))
-    model.add(LSTM(units=50))
-    model.add(Dense(units=1))
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    return model
-
-model = create_model()
+# Function to log each step
+def log_step(step):
+    logging.info(step)
 
 # Function to preprocess input date and make predictions
 def predict_currency_rate():
@@ -37,36 +23,47 @@ def predict_currency_rate():
         month = int(month_entry.get())
         year = int(year_entry.get())
 
+        log_step("Reading input date...")
+
         if year <= 2024:
             warning_label.config(text="Please enter a year from 2025 and above.", foreground="red", font=("Helvetica", 10, "bold"))
+            log_step("Year entered is before 2025.")
             return
         elif year > 2100:
             warning_label.config(text="Year cannot be over 2100.", foreground="red", font=("Helvetica", 10, "bold"))
+            log_step("Year entered is after 2100.")
             return
         elif year > 2040:
             warning_label.config(text="Warning: Predictions beyond 2040 are speculative.", foreground="red", font=("Helvetica", 10, "bold"))
+            log_step("Predictions requested beyond 2040.")
 
         if month < 1 or month > 12:
             warning_label.config(text="Invalid month. Please enter a month between 1 and 12.", foreground="red", font=("Helvetica", 10, "bold"))
+            log_step("Invalid month entered.")
             return
 
         if day < 1 or (day > 31 and month in [1, 3, 5, 7, 8, 10, 12]) or (day > 30 and month in [4, 6, 9, 11]):
             warning_label.config(text=f"Invalid day for month {month}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+            log_step("Invalid day entered.")
             return
 
         if month == 2 and ((year % 4 == 0 and year % 100 != 0) or year % 400 == 0):
             if day > 29:
                 warning_label.config(text=f"Invalid day for February {year}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+                log_step("Invalid day entered for February (leap year).")
                 return
         elif month == 2:
             if day > 28:
                 warning_label.config(text=f"Invalid day for February {year}. Please enter a valid day.", foreground="red", font=("Helvetica", 10, "bold"))
+                log_step("Invalid day entered for February (non-leap year).")
                 return
 
         input_date_str = f"{year}-{month:02d}-{day:02d}"
 
         # Convert the input date string to a datetime object
         input_date = datetime.strptime(input_date_str, "%Y-%m-%d")
+
+        log_step("Input date processed.")
 
         # Extend the dataset for future predictions
         future_dates = pd.date_range(start=data.index[-1] + pd.Timedelta(days=1), end=input_date)
@@ -106,11 +103,22 @@ def predict_currency_rate():
 
             # Clear previous prediction label
             previous_prediction_label.config(text="")
+            log_step("Prediction made successfully.")
         else:
             result_label.config(text="Not enough historical data to make prediction for this date.")
+            log_step("Insufficient historical data to make prediction.")
 
     except ValueError:
         result_label.config(text="Invalid date format. Please use DD-MM-YYYY format.")
+        log_step("Invalid date format provided.")
+
+# Function to validate the date format
+def is_valid_date(day, month, year):
+    try:
+        datetime(year, month, day)
+        return True
+    except ValueError:
+        return False
 
 # Function to reset input and result
 def reset():
@@ -120,12 +128,12 @@ def reset():
     result_label.config(text="")
     previous_prediction_label.config(text="")
     warning_label.config(text="", foreground="red", font=("Helvetica", 10, "bold"))
-
+    log_step("Input and result reset.")
 
 # Function to close the application
 def close_app():
     root.destroy()
-
+    log_step("Application closed.")
 
 # Create the main Tkinter window
 root = tk.Tk()
@@ -135,14 +143,17 @@ root.geometry("400x400")  # Set window size
 # Add big title
 title_label = ttk.Label(root, text="Currency Forecaster", font=("Helvetica", 20, "bold"))
 title_label.pack(pady=(20, 10))
+log_step("Application started.")
 
 # Add subtitle
 subtitle_label = ttk.Label(root, text="USD - LKR (historical data from 2006 to 2024)", font=("Helvetica", 12))
 subtitle_label.pack()
+log_step("Subtitle added.")
 
 # Create a frame for input fields
 input_frame = ttk.Frame(root)
 input_frame.pack(pady=10)
+log_step("Input frame created.")
 
 # Day entry field
 day_label = ttk.Label(input_frame, text="Day:")
@@ -189,6 +200,16 @@ result_label.pack(side=tk.TOP, padx=10, pady=5)
 # Add label to display previously predicted currency rate
 previous_prediction_label = ttk.Label(root, text="")
 previous_prediction_label.pack(side=tk.TOP, padx=10, pady=5)
+
+# Load the model and scaler
+model = load_model('currency_forecaster_model.h5')
+scaler = MinMaxScaler(feature_range=(0, 1))
+data = pd.read_csv('exchange_rate_data.csv', parse_dates=['Date'])
+data = data.set_index('Date')
+data = data.sort_index()
+
+# Define the time step
+time_step = 100
 
 # Start the Tkinter event loop
 root.mainloop()

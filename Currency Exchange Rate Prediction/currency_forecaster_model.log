@@ -1,0 +1,40 @@
+2024-05-06 10:52:21,079 - INFO - Data loaded and sorted.
+2024-05-06 10:52:21,079 - INFO - Data filtered from 2006 to April 2024.
+2024-05-06 10:52:21,080 - INFO - Data normalized using MinMaxScaler.
+2024-05-06 10:52:21,082 - INFO - Dataset created. Length of X: 4619, Length of y: 4619
+2024-05-06 10:52:21,175 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2024-05-06 10:52:21,645 - WARNING - `lr` is deprecated in Keras optimizer, please use `learning_rate` or use the legacy optimizer, e.g.,tf.keras.optimizers.legacy.Adam.
+2024-05-06 10:52:22,231 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\utils\tf_utils.py:492: The name tf.ragged.RaggedTensorValue is deprecated. Please use tf.compat.v1.ragged.RaggedTensorValue instead.
+
+2024-05-06 11:30:55,559 - INFO - Data loaded and sorted.
+2024-05-06 11:30:55,559 - INFO - Data filtered from 2006 to April 2024.
+2024-05-06 11:30:55,559 - INFO - Data normalized using MinMaxScaler.
+2024-05-06 11:30:55,562 - INFO - Dataset created. Length of X: 4619, Length of y: 4619
+2024-05-06 11:30:55,625 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2024-05-06 11:30:56,242 - WARNING - `lr` is deprecated in Keras optimizer, please use `learning_rate` or use the legacy optimizer, e.g.,tf.keras.optimizers.legacy.Adam.
+2024-05-06 11:30:57,037 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\utils\tf_utils.py:492: The name tf.ragged.RaggedTensorValue is deprecated. Please use tf.compat.v1.ragged.RaggedTensorValue instead.
+
+2024-05-06 12:05:19,508 - INFO - Trained model saved to currency_forecaster_model.h5
+2024-05-06 12:05:19,526 - INFO - Scaler object saved to scaler.pkl
+2024-05-06 12:05:19,530 - INFO - Training history saved to training_history.json
+2024-05-06 12:05:23,267 - INFO - Exchange rate data fetched from Alpha Vantage API.
+2024-05-06 12:05:23,358 - INFO - Today's currency value (USD to LKR) from Alpha Vantage API: 325.55
+2024-05-06 12:05:25,613 - INFO - Comparison between predicted values and today's value from the API:
+2024-05-06 12:05:25,613 - INFO - Prediction 1: 292.85 (Difference: -32.70)
+2024-05-06 12:05:25,613 - INFO - Prediction 2: 292.00 (Difference: -33.55)
+2024-05-06 12:05:25,613 - INFO - Prediction 3: 290.15 (Difference: -35.40)
+2024-05-06 12:05:25,613 - INFO - Prediction 4: 287.91 (Difference: -37.64)
+2024-05-06 12:05:25,613 - INFO - Prediction 5: 285.68 (Difference: -39.87)
+2024-05-06 12:05:25,613 - INFO - Prediction 6: 283.65 (Difference: -41.90)
+2024-05-06 12:05:25,613 - INFO - Prediction 7: 281.88 (Difference: -43.67)
+2024-05-06 12:05:25,613 - INFO - Prediction 8: 280.33 (Difference: -45.22)
+2024-05-06 12:05:25,613 - INFO - Prediction 9: 278.97 (Difference: -46.58)
+2024-05-06 12:05:25,613 - INFO - Prediction 10: 277.72 (Difference: -47.83)
+2024-05-06 12:05:25,613 - INFO - Prediction 11: 276.54 (Difference: -49.01)
+2024-05-06 12:05:25,613 - INFO - Prediction 12: 275.38 (Difference: -50.17)
+2024-05-06 12:05:29,636 - INFO - Training MSE: 0.0000
+2024-05-06 12:05:29,636 - INFO - Training MAE: 0.0013
+2024-05-06 12:05:32,186 - INFO - Validation MSE: 0.0010
+2024-05-06 12:05:32,187 - INFO - Validation MAE: 0.0194

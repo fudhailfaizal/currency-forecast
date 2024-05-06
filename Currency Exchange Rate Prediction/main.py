@@ -90,7 +90,7 @@ optimizer = Adam(lr=0.001)
 model.compile(optimizer=optimizer, loss='mean_squared_error')
 
 # Train the model with more epochs and a different batch size
-history = model.fit(train_X, train_y, epochs=500, batch_size=64, validation_data=(test_X, test_y), verbose=1)
+history = model.fit(train_X, train_y, epochs=150, batch_size=64, validation_data=(test_X, test_y), verbose=1)
 
 # Save the trained model
 model.save('currency_forecaster_model.h5')

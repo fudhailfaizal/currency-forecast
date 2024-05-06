@@ -1,15 +1,16 @@
-2024-05-06 09:59:41,727 - INFO - Application started.
-2024-05-06 09:59:41,727 - INFO - Subtitle added.
-2024-05-06 09:59:41,728 - INFO - Input frame created.
-2024-05-06 09:59:41,944 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+2024-05-06 12:05:52,235 - INFO - Application started.
+2024-05-06 12:05:52,236 - INFO - Subtitle added.
+2024-05-06 12:05:52,236 - INFO - Input frame created.
+2024-05-06 12:05:52,523 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
 
-2024-05-06 10:02:00,923 - INFO - Application started.
-2024-05-06 10:02:00,923 - INFO - Subtitle added.
-2024-05-06 10:02:00,924 - INFO - Input frame created.
-2024-05-06 10:02:01,069 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+2024-05-06 12:06:17,003 - INFO - Reading input date...
+2024-05-06 12:06:17,004 - INFO - Input date processed.
+2024-05-06 12:06:17,646 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\utils\tf_utils.py:492: The name tf.ragged.RaggedTensorValue is deprecated. Please use tf.compat.v1.ragged.RaggedTensorValue instead.
 
-2024-05-06 10:02:39,739 - INFO - Application started.
-2024-05-06 10:02:39,740 - INFO - Subtitle added.
-2024-05-06 10:02:39,740 - INFO - Input frame created.
-2024-05-06 10:02:39,865 - WARNING - From C:\Users\DELL\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
-
+2024-05-06 12:06:20,847 - INFO - Prediction made successfully.
+2024-05-06 12:06:24,930 - INFO - Input and result reset.
+2024-05-06 12:06:32,259 - INFO - Reading input date...
+2024-05-06 12:06:32,259 - INFO - Input date processed.
+2024-05-06 12:06:32,811 - INFO - Prediction made successfully.
+2024-05-06 12:06:35,563 - INFO - Input and result reset.
+2024-05-06 12:06:37,683 - INFO - Application closed.

@@ -153,9 +153,14 @@ def view_training_log():
 # Function to clear the log file
 def clear_log():
     try:
-        with open("currency_forecaster.log", "w"):  # Open file in write mode, which truncates it
-            pass
-        messagebox.showinfo("Log Cleared", "Log file has been cleared successfully.")
+        # Ask for confirmation
+        confirmation = messagebox.askyesno("Confirmation", "Are you sure you want to clear the log file?")
+
+        # If user confirms, clear the log file
+        if confirmation:
+            with open("currency_forecaster.log", "w"):  # Open file in write mode, which truncates it
+                pass
+            messagebox.showinfo("Log Cleared", "Log file has been cleared successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred while clearing the log file: {str(e)}")
 
@@ -197,37 +202,45 @@ year_label.grid(row=0, column=4, padx=5, pady=5)
 year_entry = ttk.Entry(input_frame, width=8)
 year_entry.grid(row=0, column=5, padx=5, pady=5)
 
-# Add button to trigger prediction
-predict_button = ttk.Button(root, text="Predict", command=predict_currency_rate)
-predict_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
-
-# Add button to reset input and result
-reset_button = ttk.Button(root, text="Reset", command=reset)
-reset_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
-
-# Add button to view log
-log_button = ttk.Button(root, text="View Log", command=view_log)
-log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
-
-# Add button to clear log
-clear_log_button = ttk.Button(root, text="Clear Log", command=clear_log)
-clear_log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
-
-# Add button to view training log
-view_training_log_button = ttk.Button(root, text="View Training Log", command=view_training_log)
-view_training_log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
-
-# Add warning label
-warning_label = ttk.Label(root, text="", foreground="red", font=("Helvetica", 10, "bold"))
-warning_label.pack(side=tk.BOTTOM, padx=10, pady=5, fill=tk.X)
-
-# Add close application button
-close_button = ttk.Button(root, text="Close Application", command=close_app)
-close_button.pack(side=tk.BOTTOM, padx=10, pady=5, fill=tk.X)
-
 # Add label to display result
 result_label = ttk.Label(root, text="")
 result_label.pack(side=tk.TOP, padx=10, pady=5)
+
+# Frame for predict and reset buttons
+button_frame = ttk.Frame(root)
+button_frame.pack(pady=5)
+
+# Add button to trigger prediction
+predict_button = ttk.Button(button_frame, text="Predict", command=predict_currency_rate, width=35)
+predict_button.grid(row=0, column=0, padx=(10,5), pady=5)
+
+# Add button to reset input and result
+reset_button = ttk.Button(button_frame, text="Reset", command=reset, width=10)
+reset_button.grid(row=0, column=1, padx=(5,10), pady=5)
+
+# Add warning label (centered)
+warning_label = ttk.Label(root, text="", foreground="red", font=("Helvetica", 10, "bold"))
+warning_label.pack(pady=5)
+
+# Frame for log-related buttons
+log_frame = ttk.Frame(root)
+log_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(5,2))
+
+# Add button to view log
+log_button = ttk.Button(log_frame, text="View Log", command=view_log)
+log_button.pack(side=tk.LEFT, padx=(0,2), pady=2, fill=tk.X, expand=True)
+
+# Add button to clear log
+clear_log_button = ttk.Button(log_frame, text="Clear Log", command=clear_log)
+clear_log_button.pack(side=tk.LEFT, padx=2, pady=2, fill=tk.X, expand=True)
+
+# Add button to view training log
+view_training_log_button = ttk.Button(log_frame, text="View Training Log", command=view_training_log)
+view_training_log_button.pack(side=tk.LEFT, padx=2, pady=2, fill=tk.X, expand=True)
+
+# Add close application button
+close_button = ttk.Button(root, text="Close Application", command=close_app)
+close_button.pack(side=tk.BOTTOM, padx=10, pady=(2,5), fill=tk.X)
 
 # Add label to display previously predicted currency rate
 previous_prediction_label = ttk.Label(root, text="")

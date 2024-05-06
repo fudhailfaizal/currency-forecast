@@ -6,6 +6,8 @@ import pandas as pd
 from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import logging
+import os
+import subprocess
 
 # Configure logging
 logging.basicConfig(filename='currency_forecaster.log', level=logging.INFO,
@@ -135,6 +137,28 @@ def close_app():
     root.destroy()
     log_step("Application closed.")
 
+# Function to open the log file
+def view_log():
+    try:
+        subprocess.Popen(["notepad.exe", "currency_forecaster.log"])
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while opening the log file: {str(e)}")
+
+def view_training_log():
+    try:
+        subprocess.Popen(["notepad.exe", "currency_forecaster_model.log"])
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while opening the log file: {str(e)}")
+
+# Function to clear the log file
+def clear_log():
+    try:
+        with open("currency_forecaster.log", "w"):  # Open file in write mode, which truncates it
+            pass
+        messagebox.showinfo("Log Cleared", "Log file has been cleared successfully.")
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while clearing the log file: {str(e)}")
+
 # Create the main Tkinter window
 root = tk.Tk()
 root.title("Currency Forecaster")
@@ -182,8 +206,16 @@ reset_button = ttk.Button(root, text="Reset", command=reset)
 reset_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
 
 # Add button to view log
-log_button = ttk.Button(root, text="View Log")  # Functionality for log button needs to be added
+log_button = ttk.Button(root, text="View Log", command=view_log)
 log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
+
+# Add button to clear log
+clear_log_button = ttk.Button(root, text="Clear Log", command=clear_log)
+clear_log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
+
+# Add button to view training log
+view_training_log_button = ttk.Button(root, text="View Training Log", command=view_training_log)
+view_training_log_button.pack(side=tk.TOP, padx=10, pady=5, fill=tk.X)
 
 # Add warning label
 warning_label = ttk.Label(root, text="", foreground="red", font=("Helvetica", 10, "bold"))
